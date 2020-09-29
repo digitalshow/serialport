@@ -3,7 +3,7 @@ require "./serialport/*"
 class SerialPort < IO::FileDescriptor
   getter path
 
-  def initialize(@path : String, baudrate : Termios::BaudRate, blocking = false)
+  def initialize(@path : String, baudrate : Termios::BaudRate, blocking = false, setup = true)
     oflag = LibC::O_RDWR | LibC::O_NOCTTY | LibC::O_SYNC | LibC::O_CLOEXEC
 
     fd = LibC.open(path.check_no_null_byte, oflag)
@@ -13,7 +13,7 @@ class SerialPort < IO::FileDescriptor
 
     self.sync = true # no buffering
 
-    set_interface_attributes(fd, baudrate, blocking)
+    set_interface_attributes(fd, baudrate, blocking) if setup
     super fd, blocking
   end
 
